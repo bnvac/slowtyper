@@ -1,0 +1,11 @@
+<!doctype html><html><body>
+<input id="inp" type="text"><br>
+<textarea id="ta" rows="4" cols="60"></textarea><br>
+<div id="ce" contenteditable="true" style="border:1px solid #999;min-height:40px"></div>
+<iframe id="fr" src="frame.html" width="400" height="80"></iframe>
+<script>
+window.log = {paste:0, keydown:0, input:0, inputTypes:{}};
+document.addEventListener('paste', () => log.paste++, true);
+document.addEventListener('keydown', () => log.keydown++, true);
+document.addEventListener('input', e => { log.input++; log.inputTypes[e.inputType]=(log.inputTypes[e.inputType]||0)+1; }, true);
+</script></body></html>

@@ -1,0 +1,71 @@
+:root {
+  --bg: #ffffff;
+  --fg: #1d1d1f;
+  --muted: #6b6b73;
+  --border: #d9d9de;
+  --field: #f7f7f9;
+  --accent: #4f6bed;
+  --accent-fg: #ffffff;
+  --error: #c0392b;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1f23;
+    --fg: #ececf0;
+    --muted: #a0a0aa;
+    --border: #3a3a40;
+    --field: #2a2a2f;
+    --accent: #7088ff;
+    --error: #ff7b6b;
+  }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 360px;
+  padding: 12px 14px 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+h1 { font-size: 16px; margin: 0; }
+.target { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lbl { display: block; font-weight: 500; margin-bottom: 3px; }
+.muted { color: var(--muted); font-weight: 400; }
+.small { font-size: 12px; margin: 6px 0 0; }
+.block { display: block; margin-bottom: 8px; }
+textarea, input[type="number"], select {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+textarea { resize: vertical; min-height: 90px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 8px; }
+.inline { display: flex; align-items: center; gap: 6px; }
+.inline input { width: 80px; }
+.checks { display: flex; gap: 16px; margin-bottom: 8px; }
+.checks input { accent-color: var(--accent); }
+.eta { margin: 8px 0; }
+.bar { height: 6px; background: var(--field); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; width: 0; background: var(--accent); transition: width 0.25s; }
+.meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; margin-top: 4px; }
+.actions { display: flex; gap: 8px; margin-top: 10px; }
+button {
+  font: inherit;
+  border: 1px solid var(--border);
+  background: var(--field);
+  color: inherit;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); flex: 1; }
+button:disabled { opacity: 0.5; cursor: default; }
+.error { color: var(--error); margin: 8px 0 0; }

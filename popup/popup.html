@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SlowTyper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>SlowTyper</h1>
+    <span id="target" class="target"></span>
+  </header>
+
+  <label class="block">
+    <span class="lbl">Text to type <span id="counts" class="muted"></span></span>
+    <textarea id="text" rows="7" placeholder="Paste or write your text here…"></textarea>
+  </label>
+
+  <div class="grid">
+    <label>
+      <span class="lbl">Speed <output id="wpmOut"></output> WPM</span>
+      <input id="wpm" type="range" min="5" max="200" step="1">
+    </label>
+    <label>
+      <span class="lbl">Or finish in</span>
+      <span class="inline"><input id="minutes" type="number" min="0.1" step="0.5" placeholder="min"> min</span>
+    </label>
+    <label>
+      <span class="lbl">Variation <output id="varianceOut"></output>%</span>
+      <input id="variance" type="range" min="0" max="100" step="1">
+    </label>
+    <label>
+      <span class="lbl">Typos <output id="typoOut"></output>%</span>
+      <input id="typoRate" type="range" min="0" max="10" step="0.5">
+    </label>
+  </div>
+
+  <div class="checks">
+    <label><input id="bursts" type="checkbox"> Typing bursts</label>
+    <label><input id="pauses" type="checkbox"> Thinking pauses</label>
+  </div>
+
+  <div class="grid">
+    <label>
+      <span class="lbl">Start delay</span>
+      <span class="inline"><input id="startDelay" type="number" min="0" max="30" step="1"> s</span>
+    </label>
+    <label>
+      <span class="lbl">Method</span>
+      <select id="method">
+        <option value="standard">Standard</option>
+        <option value="trusted">Trusted keys (Google Docs etc.)</option>
+      </select>
+    </label>
+  </div>
+  <p id="methodHint" class="muted small" hidden>Trusted mode sends real key presses. Chrome shows a "started debugging this browser" bar while it runs; that's expected.</p>
+
+  <div class="eta">Estimated time: <strong id="eta">–</strong></div>
+
+  <section id="runPanel" hidden>
+    <div class="bar"><div id="fill" class="fill"></div></div>
+    <div class="meta"><span id="progress"></span><span id="left"></span></div>
+    <div id="runMsg" class="muted small"></div>
+  </section>
+
+  <div class="actions">
+    <button id="start" class="primary">Start typing</button>
+    <button id="toggle" hidden>Pause</button>
+    <button id="stop" hidden>Stop</button>
+  </div>
+
+  <p id="error" class="error" hidden></p>
+  <p class="muted small">Click into the box on the page first, then open SlowTyper and press Start. Pause/resume: Alt+Shift+P.</p>
+
+  <script src="../src/engine.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
