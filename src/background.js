@@ -3,13 +3,18 @@
  * into, and the top-frame overlay. Also drives "trusted" typing through the
  * chrome.debugger (DevTools protocol) API.
  */
-importScripts('engine.js');
-const E = self.SlowTyperEngine;
+// Chrome runs this as a service worker; Firefox loads engine.js first as a
+// background script (see scripts/build.mjs), so importScripts isn't needed there.
+if (typeof importScripts === 'function') importScripts('engine.js');
+const E = globalThis.SlowTyperEngine;
+// Firefox's promise-based namespace; Chrome's chrome.* also returns promises.
+const api = globalThis.browser || chrome;
+const hasDebugger = !!api.debugger;
 
 // Per-tab state lives in session storage so it survives worker restarts.
 async function getTab(tabId) {
   const key = 'tab:' + tabId;
-  const got = await chrome.storage.session.get(key);
+  const got = await api.storage.session.get(key);
   return got[key] || {};
 }
 // Writes are chained so concurrent read-modify-writes don't drop fields.
@@ -18,13 +23,13 @@ function setTab(tabId, patch) {
   const key = 'tab:' + tabId;
   writeChain = writeChain.then(async () => {
     const cur = await getTab(tabId);
-    await chrome.storage.session.set({ [key]: Object.assign(cur, patch) });
+    await api.storage.session.set({ [key]: Object.assign(cur, patch) });
   }).catch(() => {});
   return writeChain;
 }
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  chrome.storage.session.remove('tab:' + tabId);
+  api.storage.session.remove('tab:' + tabId);
   attached.delete(tabId);
 });
 
@@ -42,6 +47,7 @@ function toFrame(tabId, frameId, msg) {
 const attached = new Set();
 
 async function cdpAttach(tabId) {
+  if (!hasDebugger) throw new Error('Trusted mode is not available in this browser. Use Standard.');
   if (attached.has(tabId)) return;
   try {
     await chrome.debugger.attach({ tabId }, '1.3');
@@ -57,7 +63,7 @@ async function cdpDetach(tabId) {
   try { await chrome.debugger.detach({ tabId }); } catch (_) { /* already detached */ }
 }
 
-chrome.debugger.onDetach.addListener(async (source) => {
+if (hasDebugger) chrome.debugger.onDetach.addListener(async (source) => {
   if (!source.tabId || !attached.has(source.tabId)) return;
   attached.delete(source.tabId);
   const t = await getTab(source.tabId);

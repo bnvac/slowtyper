@@ -69,3 +69,8 @@ button {
 button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); flex: 1; }
 button:disabled { opacity: 0.5; cursor: default; }
 .error { color: var(--error); margin: 8px 0 0; }
+.notice {
+  display: flex; align-items: center; gap: 8px; justify-content: space-between;
+  border: 1px solid var(--accent); border-radius: 8px; padding: 6px 8px; margin-bottom: 8px;
+}
+[hidden] { display: none !important; }

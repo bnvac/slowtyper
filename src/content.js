@@ -239,8 +239,7 @@
       } catch (e) {
         this.state = 'error';
         this.message = e.message;
-        this.report(true);
-        return;
+        return this.finish();
       }
 
       // Countdown so the popup can close and the page can take focus back.
@@ -287,7 +286,7 @@
 
     async finish() {
       await this.exec.done();
-      if (!this.stopped) {
+      if (!this.stopped && this.state !== 'error') {
         this.state = 'done';
         this.message = 'Done';
       }

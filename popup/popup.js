@@ -1,6 +1,9 @@
 (function () {
   'use strict';
   const E = globalThis.SlowTyperEngine;
+  const api = globalThis.browser || chrome;
+  // Trusted mode needs chrome.debugger, which Firefox doesn't have.
+  const canTrust = !!api.debugger;
   const $ = (id) => document.getElementById(id);
 
   const els = {
@@ -13,6 +16,7 @@
     eta: $('eta'), runPanel: $('runPanel'), fill: $('fill'), progress: $('progress'),
     left: $('left'), runMsg: $('runMsg'),
     start: $('start'), toggle: $('toggle'), stop: $('stop'), error: $('error'),
+    access: $('access'), grant: $('grant'),
   };
 
   let tabId = null;
@@ -25,7 +29,7 @@
       bursts: els.bursts.checked,
       pauses: els.pauses.checked,
       startDelay: Math.max(0, Number(els.startDelay.value) || 0),
-      method: els.method.value,
+      method: canTrust ? els.method.value : 'standard',
     };
   }
 
@@ -36,7 +40,7 @@
     els.bursts.checked = o.bursts;
     els.pauses.checked = o.pauses;
     els.startDelay.value = o.startDelay;
-    els.method.value = o.method;
+    els.method.value = canTrust ? o.method : 'standard';
   }
 
   function refresh() {
@@ -56,7 +60,7 @@
   function save() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
-      chrome.storage.local.set({ opts: readOpts(), text: els.text.value });
+      api.storage.local.set({ opts: readOpts(), text: els.text.value });
     }, 200);
   }
 
@@ -122,15 +126,33 @@
   els.toggle.addEventListener('click', () => send({ type: 'control', action: 'toggle' }));
   els.stop.addEventListener('click', () => send({ type: 'control', action: 'stop' }));
 
+  // Firefox lets users withhold site access; without it the content script
+  // never loads, so offer a one-click grant.
+  const ALL_SITES = { origins: ['<all_urls>'] };
+  async function checkAccess() {
+    if (!api.permissions || !api.permissions.contains) return;
+    let ok = true;
+    try { ok = await api.permissions.contains(ALL_SITES); } catch (_) { /* assume ok */ }
+    els.access.hidden = ok;
+  }
+  els.grant.addEventListener('click', async () => {
+    // permissions.request must run straight from the click, before any await.
+    const granted = await api.permissions.request(ALL_SITES).catch(() => false);
+    els.access.hidden = granted;
+    if (granted) showError('Access granted. Reload the page, click into the box, and press Start.');
+  });
+
   // --- Init ---------------------------------------------------------------------
 
   (async function init() {
-    const stored = await chrome.storage.local.get(['opts', 'text']);
+    const stored = await api.storage.local.get(['opts', 'text']);
+    if (!canTrust) els.method.closest('label').hidden = true;
     writeOpts(Object.assign({}, E.DEFAULTS, stored.opts));
+    checkAccess();
     els.text.value = stored.text || '';
     refresh();
 
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await api.tabs.query({ active: true, currentWindow: true });
     tabId = tab && tab.id;
     const res = await send({ type: 'get-tab' });
     const t = (res && res.tab) || {};

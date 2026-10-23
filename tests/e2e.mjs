@@ -55,6 +55,9 @@ const extId = sw.url().split('/')[2];
 const pop = await ctx.newPage(); await pop.setViewportSize({width:360,height:620});
 await pop.goto(`chrome-extension://${extId}/popup/popup.html`);
 await pop.fill('#text', text); await pop.waitForTimeout(300);
+const popState = await pop.evaluate(() => ({ wpm: document.getElementById('wpmOut').textContent, accessHidden: document.getElementById('access').hidden, eta: document.getElementById('eta').textContent }));
+console.log('popup:', JSON.stringify(popState));
+if (!popState.wpm || !popState.accessHidden) { console.error('POPUP INIT FAILED'); process.exitCode = 1; }
 await pop.screenshot({ path: out + '/popup.png', fullPage: true });
 await ctx.close();
 server.close();
