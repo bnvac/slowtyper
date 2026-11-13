@@ -2,3 +2,6 @@ node_modules/
 tests/*.png
 *.zip
 dist/
+__pycache__/
+*.egg-info/
+cli/build/

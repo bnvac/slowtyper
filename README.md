@@ -1,5 +1,11 @@
 # SlowTyper
 
+Two tools, one typing model:
+- **Desktop CLI** (`cli/`) types into any window: Word, Google Docs, desktop apps. See [cli/README.md](cli/README.md).
+- **Browser extension** (below) types into text boxes on web pages, with an on-page control.
+
+## Browser extension
+
 A Chrome/Edge/Brave and Firefox extension (Manifest V3) that types a string into whatever text box you've clicked, at a pace you choose, so it reads like someone typing by hand:
 
 - **Speed**: set words per minute, or "finish in N minutes". The estimated time is shown before you start and counts down while it types.

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slowtyper"
+version = "1.0.0"
+description = "Type text into whatever window has focus, at a human pace."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = ["pynput>=1.7"]
+
+[project.scripts]
+slowtyper = "slowtyper.cli:main"
+
+[tool.setuptools]
+packages = ["slowtyper"]
